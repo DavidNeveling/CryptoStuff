@@ -1,15 +1,27 @@
 import math
-def create_table(message, columns):
-    index = 0
+
+def create_table(message, columns, populate=True):
     table = [['' for j in range(int(columns))] for i in range(math.ceil(len(message) / float(columns)))]
-    for r in range(len(table)):
-        for c in range(int(columns)):
-            if index >= len(message):
-                table[r][c] = 'X'
-            else:
-                table[r][c] = message[index]
-                index += 1
+    if populate:
+        index = 0
+        for r in range(len(table)):
+            for c in range(int(columns)):
+                if index >= len(message):
+                    table[r][c] = 'X'
+                else:
+                    table[r][c] = message[index]
+                    index += 1
     return table
+
+def init_visited_table(table):
+    visited_table = [[False for j in range(len(table[0]) + 2)] for i in range(len(table) + 2)]
+    for i in range(len(visited_table[0])):
+        visited_table[0][i] = True
+        visited_table[len(visited_table) - 1][i] = True
+    for i in range(1, len(visited_table) - 1):
+        visited_table[i][0] = True
+        visited_table[i][len(visited_table[0]) - 1] = True
+    return visited_table
 
 def encrypt_clockwise(table):
     r = 0
@@ -67,7 +79,7 @@ def decrypt_clockwise(encryption, columns):
     return decrypt_scheme(encryption, columns, (r, c), directions)
 
 def decrypt_scheme(encryption, columns, start, directions_list):
-    table = [['' for j in range(int(columns))] for i in range(math.ceil(len(encryption) / float(columns)))]
+    table = create_table(encryption, columns, populate=False)
     r, c = start
     visited_table = init_visited_table(table)
     directions = directions_list
@@ -87,16 +99,6 @@ def decrypt_scheme(encryption, columns, start, directions_list):
         r += directions[d][0]
         c += directions[d][1]
     return ''.join([''.join(s) for s in table])
-
-def init_visited_table(table):
-    visited_table = [[False for j in range(len(table[0]) + 2)] for i in range(len(table) + 2)]
-    for i in range(len(visited_table[0])):
-        visited_table[0][i] = True
-        visited_table[len(visited_table) - 1][i] = True
-    for i in range(1, len(visited_table) - 1):
-        visited_table[i][0] = True
-        visited_table[i][len(visited_table[0]) - 1] = True
-    return visited_table
 
 def decrypt(encryption, key):
     columns = (key / 2 + 2) % 8 # min cols = 2 max cols = 8
