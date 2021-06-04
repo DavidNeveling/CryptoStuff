@@ -1,5 +1,3 @@
-import bit_ops
-
 def encrypt(message, key):
     key_index = 0
     encryption = ''
